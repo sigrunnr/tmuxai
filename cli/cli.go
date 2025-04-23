@@ -1,3 +1,5 @@
+// cli.go: Command-line interface for TmuxAI, including root command and flags
+
 package cli
 
 import (
@@ -20,6 +22,12 @@ var rootCmd = &cobra.Command{
 	Use:   "tmuxai [request message]",
 	Short: "TmuxAI - AI-Powered Tmux Companion",
 	Long:  `TmuxAI - AI-Powered Tmux Companion`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if v, _ := cmd.Flags().GetBool("version"); v {
+			fmt.Printf("tmuxai version: %s\ncommit: %s\nbuild date: %s\n", internal.Version, internal.Commit, internal.Date)
+			os.Exit(0)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.Load()
 		if err != nil {
@@ -61,6 +69,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.Flags().StringVarP(&taskFileFlag, "file", "f", "", "Read request from specified file")
+	rootCmd.Flags().BoolP("version", "v", false, "Print version information")
 }
 
 func Execute(cfg *config.Config) error {

@@ -31,8 +31,6 @@ var commands = []string{
 	"/squash",
 }
 
-var version = "dev"
-
 // checks if the given content is a command
 func (m *Manager) IsMessageSubcommand(content string) bool {
 	content = strings.TrimSpace(strings.ToLower(content)) // Normalize input
@@ -174,7 +172,7 @@ func (m *Manager) formatInfo() {
 	}
 	// Display general information
 	fmt.Println(formatter.FormatSection("\nGeneral"))
-	formatLine("Version", version)
+	formatLine("Version", Version)
 	formatLine("Max Capture Lines", m.Config.MaxCaptureLines)
 	formatLine("Wait Interval", m.Config.WaitInterval)
 
