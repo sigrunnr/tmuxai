@@ -41,6 +41,9 @@
 - [Core Commands](#core-commands)
 - [Command-Line Usage](#command-line-usage)
 - [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Session-Specific Configuration](#session-specific-configuration)
+  - [Using OpenAI API](#using-openai-api)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -332,10 +335,34 @@ TmuxAI » /config
 
 # Override a configuration value for this session
 TmuxAI » /config set max_capture_lines 300
-TmuxAI » /config set openai.model gpt-4o-mini
+TmuxAI » /config set openrouter.model gpt-4o-mini
 ```
 
 These changes will persist only for the current session and won't modify your config file.
+
+### Using OpenAI API
+
+OpenRouter is OpenAI API-compatible, so you can direct TmuxAI at OpenAI or any other OpenAI API-compatible endpoint by customizing the `base_url`.
+
+For OpenAI:
+
+```yaml
+openrouter:
+  api_key: sk-proj-XXX
+  model: o4-mini-2025-04-16
+  base_url: https://api.openai.com/v1/
+```
+
+For Anthropic’s Claude:
+
+```yaml
+openrouter:
+  api_key: sk-proj-XXX
+  model: claude-3-7-sonnet-20250219
+  base_url: https://api.anthropic.com/v1/
+```
+
+_Prompts are currently tuned for Gemini 2.5 by default; behavior with other models may vary._
 
 ## Contributing
 
