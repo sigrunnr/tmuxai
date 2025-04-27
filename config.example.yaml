@@ -1,6 +1,6 @@
 max_context_size: 20000 # Maximum context size in tokens, reaching 80% triggers squashing
 max_capture_lines: 200 # Maximum number of lines to capture during each message
-wait_interval: 5 # Wait interval when exec pane is considered busy
+wait_interval: 5 # Wait interval when exec pane is considered busy (used in observe and watch modes)
 
 send_keys_confirm: true # Confirm before executing send keys
 paste_multiline_confirm: true # Confirm before pasting multiline content
@@ -11,7 +11,10 @@ openrouter:
   model: google/gemini-2.5-flash-preview
   base_url: https://openrouter.ai/api/v1
 
-# AI generated and not verified - use with caution
+debug: false # Set to true to log full AI messages sent and received. Dest: ~/.config/tmuxai/debug/
+
+# AI generated and not verified - use with caution!!
+# All confirmations are checked based on these patterns
 whitelist_patterns:
   # --- File System Inspection (Broad Initial Allowance) ---
   - '^find(\s+.*)?$' # Allow find initially (actions blacklisted below)

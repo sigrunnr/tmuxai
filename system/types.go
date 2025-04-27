@@ -46,7 +46,6 @@ func (p *TmuxPaneDetails) String() string {
 		fmt.Sprintf("Args: %s%s%s\n", gray, p.CurrentCommandArgs, reset) +
 		fmt.Sprintf("Shell: %s%s%s\n", blue, p.Shell, reset) +
 		fmt.Sprintf("OS: %s%s%s\n", gray, p.OS, reset) +
-		fmt.Sprintf("Active: %s\n", formatBool(p.IsActive == 1)) +
 		fmt.Sprintf("TmuxAI Pane: %s\n", formatBool(p.IsTmuxAiPane)) +
 		fmt.Sprintf("TmuxAI Exec Pane: %s\n", formatBool(p.IsTmuxAiExecPane)) +
 		fmt.Sprintf("Prepared: %s\n", formatBool(p.IsPrepared)) +
@@ -90,7 +89,6 @@ func (p *TmuxPaneDetails) FormatInfo(f *InfoFormatter) string {
 	formatLine("OS", p.OS)
 
 	// Add status flags each on their own line
-	formatLine("Active", f.FormatBool(p.IsActive == 1))
 	formatLine("TmuxAI", f.FormatBool(p.IsTmuxAiPane))
 	formatLine("Exec Pane", f.FormatBool(p.IsTmuxAiExecPane))
 	formatLine("Prepared", f.FormatBool(p.IsPrepared))

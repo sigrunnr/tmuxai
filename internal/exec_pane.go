@@ -29,9 +29,8 @@ func (m *Manager) InitExecPane() {
 	availablePane := m.GetAvailablePane()
 	if availablePane.Id == "" {
 		system.TmuxCreateNewPane(m.PaneId)
-		m.InitExecPane()
+		availablePane = m.GetAvailablePane()
 	}
-	logger.Info("Using pane %s for execution", availablePane.Id)
 	m.ExecPane = &availablePane
 }
 
@@ -68,7 +67,7 @@ func (m *Manager) ExecWaitCapture(command string) (CommandExecHistory, error) {
 
 	animChars := []string{"⋯", "⋱", "⋮", "⋰"}
 	animIndex := 0
-	for !strings.HasSuffix(m.ExecPane.LastLine, "]»") {
+	for !strings.HasSuffix(m.ExecPane.LastLine, "]»") && m.Status != "" {
 		fmt.Printf("\r%s%s ", m.GetPrompt(), animChars[animIndex])
 		animIndex = (animIndex + 1) % len(animChars)
 		time.Sleep(500 * time.Millisecond)
@@ -76,7 +75,6 @@ func (m *Manager) ExecWaitCapture(command string) (CommandExecHistory, error) {
 	}
 	fmt.Print("\r\033[K")
 
-	m.Status = "running"
 	m.parseExecPaneCommandHistory()
 	cmd := m.ExecHistory[len(m.ExecHistory)-1]
 	logger.Debug("Command: %s\nOutput: %s\nCode: %d\n", cmd.Command, cmd.Output, cmd.Code)

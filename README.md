@@ -1,18 +1,48 @@
 <br/>
 <div align="center">
-<a href="https://github.com/alvinunreal/tmuxai">
-<img src="https://tmuxai.dev/gh.svg" alt="TmuxAI Logo" width="100%" style="border-radius: 10px">
-</a>
-<br/>
-<br/>
-<a href="https://tmuxai.dev/getting-started"><strong>Getting Started »</strong></a>
-<br/>
-<br/>
-<a href="https://tmuxai.dev/screenshots">Screenshots |</a>
-<a href="https://github.com/alvinunreal/tmuxai/issues/new?labels=bug&template=bug_report.md">Report Bug |</a>
-<a href="https://github.com/alvinunreal/tmuxai/issues/new?labels=enhancement&template=feature_request.md">Request Feature</a>
-</p>
+  <a href="https://github.com/alvinunreal/tmuxai">
+    <img src="https://tmuxai.dev/gh.svg" alt="TmuxAI Logo" width="100%">
+  </a>
+  <h3 align="center">TmuxAI</h3>
+  <p align="center">
+    Your intelligent pair programmer directly within your tmux sessions.
+    <br/>
+    <br/>
+    <a href="https://github.com/alvinunreal/tmuxai/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/alvinunreal/tmuxai?style=flat-square"></a>
+    <a href="https://github.com/alvinunreal/tmuxai/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/alvinunreal/tmuxai?style=flat-square"></a>
+    <a href="https://github.com/alvinunreal/tmuxai/issues"><img alt="Issues" src="https://img.shields.io/github/issues/alvinunreal/tmuxai?style=flat-square"></a>
+    <br/>
+    <br/>
+    <br/>
+    <a href="https://tmuxai.dev/screenshots" target="_blank">Screenshots</a> |
+    <a href="https://github.com/alvinunreal/tmuxai/issues/new?labels=bug&template=bug_report.md" target="_blank">Report Bug</a> |
+    <a href="https://github.com/alvinunreal/tmuxai/issues/new?labels=enhancement&template=feature_request.md" target="_blank">Request Feature</a>
+  </p>
 </div>
+
+## Table of Contents
+
+- [About The Project](#about-the-project)
+  - [Human-Inspired Interface](#human-inspired-interface)
+- [Installation](#installation)
+  - [Quick Install](#quick-install)
+  - [Homebrew](#homebrew)
+  - [Manual Download](#manual-download)
+- [Post-Installation Setup](#post-installation-setup)
+- [TmuxAI Layout](#tmuxai-layout)
+- [Observe Mode](#observe-mode)
+- [Prepare Mode](#prepare-mode)
+- [Watch Mode](#watch-mode)
+  - [Activating Watch Mode](#activating-watch-mode)
+  - [Example Use Cases](#example-use-cases)
+- [Squashing](#squashing)
+  - [What is Squashing?](#what-is-squashing)
+  - [Manual Squashing](#manual-squashing)
+- [Core Commands](#core-commands)
+- [Command-Line Usage](#command-line-usage)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## About The Project
 
@@ -86,6 +116,8 @@ After installing TmuxAI, you need to configure your API key to start using it:
 
 ## TmuxAI Layout
 
+![Panes](https://tmuxai.dev/shots/panes.png?lastmode=1)
+
 TmuxAI is designed to operate within a single tmux window, with one instance of
 TmuxAI running per window and organizes your workspace using the following pane structure:
 
@@ -97,7 +129,10 @@ TmuxAI running per window and organizes your workspace using the following pane 
 
 ## Observe Mode
 
-TmuxAI operates by default in what's called "observe mode". Here's how the interaction flow works:
+![Observe Mode](https://tmuxai.dev/shots/demo-observe.png)
+_TmuxAI sent the first ping command and is waiting for the countdown to check for the next step_
+
+TmuxAI operates by default in "observe mode". Here's how the interaction flow works:
 
 1. **User types a message** in the Chat Pane.
 
@@ -117,15 +152,20 @@ TmuxAI operates by default in what's called "observe mode". Here's how the inter
    - Check if the command matches whitelist or blacklist patterns
    - Ask for your confirmation (unless the command is whitelisted)
    - Execute the command in the designated Exec Pane if approved
-   - Wait for the `wait_interval` (default: 5 seconds)
+   - Wait for the `wait_interval` (default: 5 seconds) (You can pause/resume the countdown with `space` or `enter` to stop the countdown)
    - Capture the new output from all panes
    - Send the updated context back to the AI to continue helping you
 
 6. **The conversation continues** until your task is complete.
 
+![Observe Mode Flowchart](https://tmuxai.dev/shots/observe-mode.png)
+
 ## Prepare Mode
 
-Prepare mode improves TmuxAI's ability to work with your terminal by customizing
+![Prepare Mode](https://tmuxai.dev/shots/demo-prepare.png?lastmode=1)
+_TmuxAI customized the pane prompt and sent the first ping command. Instead of the countdown, it's waiting for command completion_
+
+Prepare mode is an optional feature that enhances TmuxAI's ability to work with your terminal by customizing
 your shell prompt and tracking command execution with better precision. This
 enhancement eliminates the need for arbitrary wait intervals and provides the AI
 with more detailed information about your commands and their results.
@@ -152,6 +192,9 @@ username@hostname:~/r/tmuxai[21:05][0]»
 
 ## Watch Mode
 
+![Watch Mode](https://tmuxai.dev/shots/demo-watch.png)
+_TmuxAI watching user shell commands and better alternatives_
+
 Watch Mode transforms TmuxAI into a proactive assistant that continuously
 monitors your terminal activity and provides suggestions based on what you're
 doing.
@@ -171,12 +214,12 @@ When activated, TmuxAI will:
 
 ### Example Use Cases
 
-Watch Mode is could be valuable for scenarios such as:
+Watch Mode could be valuable for scenarios such as:
 
 - **Learning shell efficiency**: Get suggestions for more concise commands as you work
 
   ```
-  TmuxAI » /watch suggest more efficient alternatives to my shell commands
+  TmuxAI » /watch spot and suggest more efficient alternatives to my shell commands
   ```
 
 - **Detecting common errors**: Receive warnings about potential issues or mistakes
@@ -204,7 +247,7 @@ manage this, TmuxAI implements a simple context management feature called
 Squashing is TmuxAI's built-in mechanism for summarizing chat history to manage
 token usage.
 
-In simple terms, when your context grows too large, TmuxAI condenses previous
+When your context grows too large, TmuxAI condenses previous
 messages into a more compact summary.
 
 You can check your current context utilization at any time using the `/info` command:
@@ -245,12 +288,61 @@ TmuxAI » /squash
 | `/watch <description>`      | Enable Watch Mode with specified goal                            |
 | `/exit`                     | Exit TmuxAI                                                      |
 
+## Command-Line Usage
+
+You can start `tmuxai` with an initial message or task file from the command line:
+
+- **Direct Message:**
+
+  ```sh
+  tmuxai your initial message
+  ```
+
+- **Task File:**
+  ```sh
+  tmuxai -f path/to/your_task.txt
+  ```
+
+## Configuration
+
+The configuration can be managed through a YAML file, environment variables, or via runtime commands.
+
+TmuxAI looks for its configuration file at `~/.config/tmuxai/config.yaml`.
+For a sample configuration file, see [config.example.yaml](https://github.com/alvinunreal/tmuxai/blob/main/config.example.yaml).
+
+### Environment Variables
+
+All configuration options can also be set via environment variables, which take precedence over the config file. Use the prefix `TMUXAI_` followed by the uppercase configuration key:
+
+```bash
+# Examples
+export TMUXAI_DEBUG=true
+export TMUXAI_MAX_CAPTURE_LINES=300
+export TMUXAI_OPENROUTER_API_KEY="your-api-key-here"
+export TMUXAI_OPENROUTER_MODEL="..."
+```
+
+### Session-Specific Configuration
+
+You can override some configuration values for your current TmuxAI session using the `/config` command:
+
+```bash
+# View current configuration
+TmuxAI » /config
+
+# Override a configuration value for this session
+TmuxAI » /config set max_capture_lines 300
+TmuxAI » /config set openai.model gpt-4o-mini
+```
+
+These changes will persist only for the current session and won't modify your config file.
+
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and create a pull request.
+You can also simply open an issue.
+<br>
+Don't forget to give the project a star!
 
 ## License
 

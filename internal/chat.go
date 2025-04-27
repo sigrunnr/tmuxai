@@ -111,6 +111,7 @@ func (c *CLIInterface) processInput(input string) {
 		case <-sigChan:
 			fmt.Println("canceling...")
 			c.manager.Status = ""
+			c.manager.WatchMode = false
 		case <-done:
 		}
 	}()

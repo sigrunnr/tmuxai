@@ -66,6 +66,7 @@ func (m *Manager) ProcessSubCommand(command string) {
 	case prefixMatch(commandPrefix, "/prepare"):
 		m.InitExecPane()
 		m.PrepareExecPane()
+		m.Messages = []ChatMessage{}
 		if m.ExecPane.IsPrepared {
 			m.Println("Exec pane prepared successfully")
 		}
@@ -96,11 +97,6 @@ func (m *Manager) ProcessSubCommand(command string) {
 		os.Exit(0)
 		return
 
-	case commandLower == "/watch off" || commandLower == "/w off":
-		m.WatchMode = false
-		m.Println("Watch mode disabled")
-		return
-
 	case prefixMatch(commandPrefix, "/squash"):
 		m.squashHistory()
 		return
@@ -109,14 +105,14 @@ func (m *Manager) ProcessSubCommand(command string) {
 		parts := strings.Fields(command)
 		if len(parts) > 1 {
 			watchDesc := strings.Join(parts[1:], " ")
-			m.Println("Watch mode enabled with description: " + watchDesc)
-			only := `
-1. Find out if there is new content in the pane.
-2. Comment considering only the new pane content.
-`
+			startWatch := `
+1. Find out if there is new content in the pane based on chat history.
+2. Comment only considering the new content in this pane output.
+
+Watch for: ` + watchDesc
 			m.Status = "running"
 			m.WatchMode = true
-			m.startWatchMode(only + watchDesc)
+			m.startWatchMode(startWatch)
 			return
 		}
 		m.Println("Usage: /watch <description>")

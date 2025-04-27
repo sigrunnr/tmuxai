@@ -85,7 +85,7 @@ func (m *Manager) ProcessUserMessage(message string) bool {
 		Timestamp: time.Now(),
 	}
 
-	// did AI follow guidelines?
+	// did AI follow our guidelines?
 	guidelineError, validResponse := m.aiFollowedGuidelines(r)
 	if !validResponse {
 		m.Println("AI didn't follow guidelines, trying again...")
