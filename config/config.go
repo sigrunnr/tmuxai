@@ -86,8 +86,15 @@ func Load() (*Config, error) {
 
 	// Environment variables
 	viper.SetEnvPrefix("TMUXAI")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// Automatically bind all config keys to environment variables
+	configType := reflect.TypeOf(*config)
+	for _, key := range EnumerateConfigKeys(configType, "") {
+		viper.BindEnv(key)
+	}
+
 	viper.AutomaticEnv()
-	viper.BindEnv("openrouter.api_key", "TMUXAI_OPENROUTER_API_KEY")
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
