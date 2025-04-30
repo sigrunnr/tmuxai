@@ -43,7 +43,7 @@
 - [Configuration](#configuration)
   - [Environment Variables](#environment-variables)
   - [Session-Specific Configuration](#session-specific-configuration)
-  - [Using OpenAI API](#using-openai-api)
+  - [Using Other AI Providers](#using-other-ai-providers)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -342,7 +342,7 @@ TmuxAI » /config set openrouter.model gpt-4o-mini
 
 These changes will persist only for the current session and won't modify your config file.
 
-### Using OpenAI API
+### Using Other AI Providers
 
 OpenRouter is OpenAI API-compatible, so you can direct TmuxAI at OpenAI or any other OpenAI API-compatible endpoint by customizing the `base_url`.
 
@@ -362,6 +362,15 @@ openrouter:
   api_key: sk-proj-XXX
   model: claude-3-7-sonnet-20250219
   base_url: https://api.anthropic.com/v1/
+```
+
+For local Ollama:
+
+```yaml
+openrouter:
+  api_key: api-key
+  model: gemma3:1b
+  base_url: http://localhost:11434/v1
 ```
 
 _Prompts are currently tuned for Gemini 2.5 by default; behavior with other models may vary._
