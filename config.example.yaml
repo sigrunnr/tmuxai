@@ -6,10 +6,29 @@ send_keys_confirm: true # Confirm before executing send keys
 paste_multiline_confirm: true # Confirm before pasting multiline content
 exec_confirm: true # Confirm before executing commands
 
+# Not only OpenRouter, you can use any OpenAI compatible API
 openrouter:
   api_key: sk-or-v1-XXXXXXXXX
-  model: google/gemini-2.5-flash-preview
-  base_url: https://openrouter.ai/api/v1
+  model: google/gemini-2.5-flash-preview # default model
+  base_url: https://openrouter.ai/api/v1 # default base url
+
+# OpenAI example
+# openrouter:
+#   api_key: sk-XXXXXXXXX
+#   model: o4-mini-2025-04-16
+#   base_url: https://api.openai.com/v1/
+
+# Anthropic example
+# openrouter:
+#   api_key: sk-proj-XXX
+#   model:
+#   base_url: https://api.anthropic.com/v1/
+
+# Local Ollama example
+# openrouter:
+#   api_key: api-key
+#   model: gemma3:1b
+#   base_url: http://localhost:11434/v1/
 
 debug: false # Set to true to log full AI messages sent and received. Dest: ~/.config/tmuxai/debug/
 

@@ -12,6 +12,10 @@ GH_REPO="alvinunreal/tmuxai"
 PROJECT_NAME="tmuxai"
 DEFAULT_INSTALL_DIR="/usr/local/bin"
 
+CONFIG_DIR="$HOME/.config/tmuxai"
+CONFIG_FILE="$CONFIG_DIR/config.example.yaml"
+EXAMPLE_CONFIG_URL="https://raw.githubusercontent.com/alvinunreal/tmuxai/main/config.example.yaml"
+
 tmp_dir=""
 
 err() {
@@ -20,7 +24,7 @@ err() {
 }
 
 info() {
-  echo "[INFO] $*"
+  echo "$*"
 }
 
 # Checks if a command exists
@@ -62,6 +66,19 @@ main() {
   # Ensure the target installation directory exists
   mkdir -p "$install_dir" || err "Failed to create installation directory: $install_dir"
 
+  # --- Check for tmux ---
+  if ! command_exists tmux; then
+    info "-----------------------------------------------------------"
+    info "'tmux' command not found."
+    info "tmuxai requires tmux to function."
+    info "Please install tmux:"
+    info "  On Debian/Ubuntu: sudo apt update && sudo apt install tmux"
+    info "  On macOS (Homebrew): brew install tmux"
+    info "  On Fedora: sudo dnf install tmux"
+    info "  On Arch Linux: sudo pacman -S tmux"
+    info "-----------------------------------------------------------"
+    exit 1
+  fi
 
   # --- Dependency Checks ---
   command_exists curl || err "'curl' is required but not installed."
@@ -118,7 +135,6 @@ main() {
 
   local api_url release_data download_url asset_filename tag_name
   if [ -z "$version" ]; then
-    info "Fetching latest release version..."
     api_url="https://api.github.com/repos/${GH_REPO}/releases/latest"
     release_data=$(curl -sfL "$api_url") || err "Failed to fetch latest release info from GitHub API."
     tag_name=$(echo "$release_data" | grep '"tag_name":' | cut -d'"' -f4)
@@ -128,7 +144,6 @@ main() {
     info "Latest version tag is: $tag_name"
   else
     tag_name="$version"
-    info "Fetching release information for tag: $tag_name..."
     api_url="https://api.github.com/repos/${GH_REPO}/releases/tags/${tag_name}"
     release_data=$(curl -sfL "$api_url") || err "Failed to fetch release info for tag $tag_name from GitHub API."
     if ! echo "$release_data" | grep -q "\"tag_name\": *\"$tag_name\""; then
@@ -155,7 +170,6 @@ main() {
   info "Downloading $asset_filename to $tmp_dir..."
   curl -sfLo "$tmp_dir/$asset_filename" "$download_url" || err "Download failed."
 
-  info "Extracting archive..."
   pushd "$tmp_dir" > /dev/null
   case "$archive_ext" in
     tar.gz)
@@ -187,8 +201,6 @@ main() {
   local target_path="$install_dir/$PROJECT_NAME"
   local sudo_cmd=""
 
-  info "Installing $PROJECT_NAME to $target_path..."
-
   if [ -d "$install_dir" ] && [ ! -w "$install_dir" ] || { [ ! -e "$install_dir" ] && [ ! -w "$(dirname "$install_dir")" ]; }; then
       info "Write permission required for $install_dir or its parent. Using sudo."
       command_exists sudo || err "'sudo' command not found, but required to write to $install_dir. Please install sudo or choose a writable directory with -b option."
@@ -204,7 +216,6 @@ main() {
   fi
 
   # --- Verification and Completion ---
-  info "Installation successful!"
   info "Installed binary: $target_path"
 
   # Keep installed_version_output local
@@ -216,7 +227,15 @@ main() {
   else
       installed_version_output="(version command failed or not supported by '$PROJECT_NAME')"
   fi
-  info "Version check: $installed_version_output"
+  info ""
+  info "$installed_version_output"
+  info ""
+
+  # --- Install Configuration File ---
+  mkdir -p "$CONFIG_DIR" || err "Failed to create configuration directory: $CONFIG_DIR"
+  if curl -sfLo "$CONFIG_FILE" "$EXAMPLE_CONFIG_URL"; then
+    info "Example configuration added to $CONFIG_FILE"
+  fi
 
   case ":$PATH:" in
       *":$install_dir:"*)
@@ -228,9 +247,8 @@ main() {
           info "Then, restart your shell or run: source ~/.your_shell_rc"
           ;;
   esac
-
-  info "Installation complete."
-  info "To get started, set the TMUXAI_OPENROUTER_API_KEY environment variable or add it to the config."
+  info ""
+  info "To get started, set the TMUXAI_OPENROUTER_API_KEY environment variable or add it to the config: ${CONFIG_DIR}/config.yaml"
 }
 
 main "$@"

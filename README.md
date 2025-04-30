@@ -370,7 +370,7 @@ For local Ollama:
 openrouter:
   api_key: api-key
   model: gemma3:1b
-  base_url: http://localhost:11434/v1
+  base_url: http://localhost:11434/v1/
 ```
 
 _Prompts are currently tuned for Gemini 2.5 by default; behavior with other models may vary._
