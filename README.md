@@ -1,7 +1,7 @@
 <br/>
 <div align="center">
   <a href="https://github.com/alvinunreal/tmuxai">
-    <img src="https://tmuxai.dev/gh.svg" alt="TmuxAI Logo" width="100%">
+    <img src="https://tmuxai.dev/gh.svg?v=2" alt="TmuxAI Logo" width="100%">
   </a>
   <h3 align="center">TmuxAI</h3>
   <p align="center">
