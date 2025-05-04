@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 
 // Main function to process regular user messages
 // Returns true if the request was accomplished and no further processing should happen
-func (m *Manager) ProcessUserMessage(message string) bool {
+func (m *Manager) ProcessUserMessage(ctx context.Context, message string) bool {
 	// Check if context management is needed before sending
 	if m.needSquash() {
 		m.Println("Exceeded context size, squashing history...")
@@ -28,8 +29,12 @@ func (m *Manager) ProcessUserMessage(message string) bool {
 	}
 
 	currentTmuxWindow := m.GetTmuxPanesInXml(m.Config)
+	execPaneEnv := ""
+	if !m.ExecPane.IsSubShell {
+		execPaneEnv = fmt.Sprintf("Keep in mind, you are working within the shell: %s and OS: %s", m.ExecPane.Shell, m.ExecPane.OS)
+	}
 	currentMessage := ChatMessage{
-		Content:   currentTmuxWindow + "\n\n" + message,
+		Content:   currentTmuxWindow + "\n\n" + execPaneEnv + "\n\n" + message,
 		FromUser:  true,
 		Timestamp: time.Now(),
 	}
@@ -40,19 +45,24 @@ func (m *Manager) ProcessUserMessage(message string) bool {
 	case m.WatchMode:
 		history = []ChatMessage{m.watchPrompt()}
 	case m.ExecPane.IsPrepared:
-		history = []ChatMessage{m.chatAssistantPreparedPrompt()}
+		history = []ChatMessage{m.chatAssistantPrompt(true)}
 	default:
-		history = []ChatMessage{m.chatAssistantPrompt()}
+		history = []ChatMessage{m.chatAssistantPrompt(false)}
 	}
 
 	history = append(history, m.Messages...)
 
 	sending := append(history, currentMessage)
 
-	response, err := m.AiClient.GetResponseFromChatMessages(sending, m.GetOpenRouterModel())
+	response, err := m.AiClient.GetResponseFromChatMessages(ctx, sending, m.GetOpenRouterModel())
 	if err != nil {
 		s.Stop()
 		m.Status = ""
+
+		if ctx.Err() == context.Canceled {
+			return false
+		}
+
 		fmt.Println("Failed to get response from AI: " + err.Error())
 		return false
 	}
@@ -90,7 +100,7 @@ func (m *Manager) ProcessUserMessage(message string) bool {
 	if !validResponse {
 		m.Println("AI didn't follow guidelines, trying again...")
 		m.Messages = append(m.Messages, currentMessage, responseMsg)
-		return m.ProcessUserMessage(guidelineError)
+		return m.ProcessUserMessage(ctx, guidelineError)
 
 	}
 
@@ -105,7 +115,7 @@ func (m *Manager) ProcessUserMessage(message string) bool {
 		m.Messages = append(m.Messages, currentMessage, responseMsg)
 	}
 
-	// observe mode
+	// observe/prepared mode
 	for _, execCommand := range r.ExecCommand {
 		code, _ := system.HighlightCode("sh", execCommand)
 		m.Println(code)
@@ -119,8 +129,12 @@ func (m *Manager) ProcessUserMessage(message string) bool {
 		}
 		if isSafe {
 			m.Println("Executing command: " + command)
-			system.TmuxSendCommandToPane(m.ExecPane.Id, command, true)
-			time.Sleep(1 * time.Second)
+			if m.ExecPane.IsPrepared {
+				m.ExecWaitCapture(command)
+			} else {
+				system.TmuxSendCommandToPane(m.ExecPane.Id, command, true)
+				time.Sleep(1 * time.Second)
+			}
 		} else {
 			m.Status = ""
 			return false
@@ -150,29 +164,12 @@ func (m *Manager) ProcessUserMessage(message string) bool {
 
 	if r.ExecPaneSeemsBusy {
 		m.Countdown(m.GetWaitInterval())
-		accomplished := m.ProcessUserMessage("waited for 5 more seconds, here is the current pane(s) content")
+		// Create a new context for this recursive call
+		newCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		accomplished := m.ProcessUserMessage(newCtx, "waited for 5 more seconds, here is the current pane(s) content")
 		if accomplished {
 			return true
-		}
-	}
-
-	// prepared mode
-	if r.ExecAndWait != "" {
-		code, _ := system.HighlightCode("sh", r.ExecAndWait)
-		fmt.Println(code)
-
-		isSafe := false
-		command := r.ExecAndWait
-		if m.GetExecConfirm() {
-			isSafe, command = m.confirmedToExec(r.ExecAndWait, "Execute this command?", true)
-		} else {
-			isSafe = true
-		}
-		if isSafe {
-			m.ExecWaitCapture(command)
-		} else {
-			m.Status = ""
-			return false
 		}
 	}
 
@@ -214,7 +211,7 @@ func (m *Manager) ProcessUserMessage(message string) bool {
 	}
 
 	if !m.WatchMode {
-		accomplished := m.ProcessUserMessage("sending updated pane(s) content")
+		accomplished := m.ProcessUserMessage(ctx, "sending updated pane(s) content")
 		if accomplished {
 			return true
 		}
@@ -231,15 +228,19 @@ func (m *Manager) startWatchMode(desc string) {
 
 	m.Countdown(m.GetWaitInterval())
 
-	accomplished := m.ProcessUserMessage(desc)
+	// Create a new background context since this is a separate process
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	accomplished := m.ProcessUserMessage(ctx, desc)
 	if accomplished {
 		m.WatchMode = false
 		m.Status = ""
-		return
 	}
 
-	if m.WatchMode {
-		m.startWatchMode(desc)
+	// we continue running if status is still set
+	if m.Status != "" && m.WatchMode {
+		m.startWatchMode("")
 	}
 }
 
@@ -264,7 +265,7 @@ func (m *Manager) aiFollowedGuidelines(r AIResponse) (string, bool) {
 	}
 
 	// Check if only one tag is used
-	tags := []int{len(r.ExecCommand), len(r.SendKeys), len(r.PasteMultilineContent), len(r.ExecAndWait)}
+	tags := []int{len(r.ExecCommand), len(r.SendKeys), len(r.PasteMultilineContent)}
 	count := 0
 	for _, len := range tags {
 		if len > 0 {
@@ -279,25 +280,6 @@ func (m *Manager) aiFollowedGuidelines(r AIResponse) (string, bool) {
 	// watch mode has no xml tags, otherwise should be at least 1 xml tag in response
 	if !m.WatchMode && count+boolCount == 0 {
 		return "You didn't follow the guidelines. You must use at least one XML tag in your response. Pay attention!", false
-	}
-
-	// Check if ExecCommand elements have max 120 characters
-	for _, cmd := range r.ExecCommand {
-		if len(cmd) > 120 {
-			return fmt.Sprintf("You didn't follow the guidelines. ExecCommand content should have max 120 characters, but you provided %d characters: Pay attention!", len(cmd)), false
-		}
-	}
-
-	// Check if TmuxSendKeys elements have max 30 characters
-	for _, key := range r.SendKeys {
-		if len(key) > 120 {
-			return fmt.Sprintf("You didn't follow the guidelines. TmuxSendKeys content should have max 30 characters, but you provided %d characters: Pay attention!", len(key)), false
-		}
-	}
-
-	// Check if there are max 5 TmuxSendKeys elements
-	if len(r.SendKeys) > 5 {
-		return fmt.Sprintf("You didn't follow the guidelines. There should be max 5 TmuxSendKeys elements, but you provided %d elements. Pay attention!", len(r.SendKeys)), false
 	}
 
 	return "", true

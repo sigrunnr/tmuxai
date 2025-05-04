@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -119,7 +120,11 @@ func (m *Manager) summarizeChatHistory(messages []ChatMessage) (string, error) {
 		},
 	}
 
-	summary, err := m.AiClient.GetResponseFromChatMessages(summarizationMessage, m.GetOpenRouterModel())
+	// Create a context for the summarization request
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	summary, err := m.AiClient.GetResponseFromChatMessages(ctx, summarizationMessage, m.GetOpenRouterModel())
 	if err != nil {
 		return "", err
 	}

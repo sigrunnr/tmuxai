@@ -53,8 +53,8 @@ func DefaultConfig() *Config {
 		WhitelistPatterns:     []string{},
 		BlacklistPatterns:     []string{},
 		OpenRouter: OpenRouterConfig{
-			Model:   "google/gemini-2.5-flash-preview",
 			BaseURL: "https://openrouter.ai/api/v1",
+			Model:   "google/gemini-2.5-flash-preview",
 		},
 		Prompts: PromptsConfig{
 			BaseSystem:    ``,

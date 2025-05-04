@@ -17,7 +17,6 @@ type AIResponse struct {
 	SendKeys               []string
 	ExecCommand            []string
 	PasteMultilineContent  string
-	ExecAndWait            string
 	RequestAccomplished    bool
 	ExecPaneSeemsBusy      bool
 	WaitingForUserResponse bool
@@ -146,7 +145,6 @@ func (ai *AIResponse) String() string {
 	SendKeys: %v
 	ExecCommand: %v
 	PasteMultilineContent: %s
-	ExecAndWait: %s
 	RequestAccomplished: %v
 	ExecPaneSeemsBusy: %v
 	WaitingForUserResponse: %v
@@ -156,7 +154,6 @@ func (ai *AIResponse) String() string {
 		ai.SendKeys,
 		ai.ExecCommand,
 		ai.PasteMultilineContent,
-		ai.ExecAndWait,
 		ai.RequestAccomplished,
 		ai.ExecPaneSeemsBusy,
 		ai.WaitingForUserResponse,

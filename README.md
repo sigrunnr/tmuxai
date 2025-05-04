@@ -352,7 +352,7 @@ For OpenAI:
 openrouter:
   api_key: sk-proj-XXX
   model: o4-mini-2025-04-16
-  base_url: https://api.openai.com/v1/
+  base_url: https://api.openai.com/v1
 ```
 
 For Anthropic’s Claude:
@@ -361,7 +361,7 @@ For Anthropic’s Claude:
 openrouter:
   api_key: sk-proj-XXX
   model: claude-3-7-sonnet-20250219
-  base_url: https://api.anthropic.com/v1/
+  base_url: https://api.anthropic.com/v1
 ```
 
 For local Ollama:
@@ -370,7 +370,7 @@ For local Ollama:
 openrouter:
   api_key: api-key
   model: gemma3:1b
-  base_url: http://localhost:11434/v1/
+  base_url: http://localhost:11434/v1
 ```
 
 _Prompts are currently tuned for Gemini 2.5 by default; behavior with other models may vary._

@@ -2,11 +2,13 @@ package internal
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/alvinunreal/tmuxai/config"
@@ -53,7 +55,7 @@ func NewAiClient(cfg *config.OpenRouterConfig) *AiClient {
 }
 
 // GetResponseFromChatMessages gets a response from the AI based on chat messages
-func (c *AiClient) GetResponseFromChatMessages(chatMessages []ChatMessage, model string) (string, error) {
+func (c *AiClient) GetResponseFromChatMessages(ctx context.Context, chatMessages []ChatMessage, model string) (string, error) {
 	// Convert chat messages to AI client format
 	aiMessages := []Message{}
 
@@ -77,7 +79,7 @@ func (c *AiClient) GetResponseFromChatMessages(chatMessages []ChatMessage, model
 	logger.Info("Sending %d messages to AI", len(aiMessages))
 
 	// Get response from AI
-	response, err := c.ChatCompletion(aiMessages, model)
+	response, err := c.ChatCompletion(ctx, aiMessages, model)
 	if err != nil {
 		return "", err
 	}
@@ -86,7 +88,7 @@ func (c *AiClient) GetResponseFromChatMessages(chatMessages []ChatMessage, model
 }
 
 // ChatCompletion sends a chat completion request to the OpenRouter API
-func (c *AiClient) ChatCompletion(messages []Message, model string) (string, error) {
+func (c *AiClient) ChatCompletion(ctx context.Context, messages []Message, model string) (string, error) {
 	reqBody := ChatCompletionRequest{
 		Model:    model,
 		Messages: messages,
@@ -98,9 +100,11 @@ func (c *AiClient) ChatCompletion(messages []Message, model string) (string, err
 		return "", fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	url := c.config.BaseURL + "/chat/completions"
+	// Remove trailing slash from BaseURL if present: https://github.com/alvinunreal/tmuxai/issues/13
+	baseURL := strings.TrimSuffix(c.config.BaseURL, "/")
+	url := baseURL + "/chat/completions"
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(reqJSON))
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(reqJSON))
 	if err != nil {
 		logger.Error("Failed to create request: %v", err)
 		return "", fmt.Errorf("failed to create request: %w", err)
@@ -116,6 +120,9 @@ func (c *AiClient) ChatCompletion(messages []Message, model string) (string, err
 	// Send the request
 	resp, err := c.client.Do(req)
 	if err != nil {
+		if ctx.Err() == context.Canceled {
+			return "", fmt.Errorf("request canceled: %w", ctx.Err())
+		}
 		logger.Error("Failed to send request: %v", err)
 		return "", fmt.Errorf("failed to send request: %w", err)
 	}

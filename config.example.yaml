@@ -16,19 +16,19 @@ openrouter:
 # openrouter:
 #   api_key: sk-XXXXXXXXX
 #   model: o4-mini-2025-04-16
-#   base_url: https://api.openai.com/v1/
+#   base_url: https://api.openai.com/v1
 
 # Anthropic example
 # openrouter:
 #   api_key: sk-proj-XXX
 #   model:
-#   base_url: https://api.anthropic.com/v1/
+#   base_url: https://api.anthropic.com/v1
 
 # Local Ollama example
 # openrouter:
 #   api_key: api-key
 #   model: gemma3:1b
-#   base_url: http://localhost:11434/v1/
+#   base_url: http://localhost:11434/v1
 
 debug: false # Set to true to log full AI messages sent and received. Dest: ~/.config/tmuxai/debug/
 

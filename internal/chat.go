@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -105,11 +106,15 @@ func (c *CLIInterface) processInput(input string) {
 	// Set up a notification channel
 	done := make(chan struct{})
 
+	// Create a cancellable context
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	// Launch a goroutine just for handling the interrupt
 	go func() {
 		select {
 		case <-sigChan:
-			fmt.Println("canceling...")
+			cancel()
 			c.manager.Status = ""
 			c.manager.WatchMode = false
 		case <-done:
@@ -118,7 +123,7 @@ func (c *CLIInterface) processInput(input string) {
 
 	// Run the message processing in the main thread
 	c.manager.Status = "running"
-	c.manager.ProcessUserMessage(input)
+	c.manager.ProcessUserMessage(ctx, input)
 	c.manager.Status = ""
 
 	close(done)

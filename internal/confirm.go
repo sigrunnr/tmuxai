@@ -93,8 +93,8 @@ func (m *Manager) confirmedToExec(command string, prompt string, edit bool) (boo
 			return false, ""
 		}
 	default:
-		// any other input is considered as "no"
-		return false, ""
+		// any other input is retry confirmation
+		return m.confirmedToExec(command, prompt, edit)
 	}
 }
 
