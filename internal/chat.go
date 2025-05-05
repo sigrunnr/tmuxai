@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alvinunreal/tmuxai/config"
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/sigrunnr/tmuxai/config"
+	"github.com/sigrunnr/tmuxai/logger"
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
 )

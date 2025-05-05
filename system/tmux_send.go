@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/sigrunnr/tmuxai/logger"
 )
 
 func TmuxSendCommandToPane(paneId string, command string, autoenter bool) error {
