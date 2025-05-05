@@ -1,6 +1,6 @@
 <br/>
 <div align="center">
-  <a href="https://github.com/alvinunreal/tmuxai">
+  <a href="https://github.com/sigrunnr/tmuxai">
     <img src="https://tmuxai.dev/gh.svg?v=2" alt="TmuxAI Logo" width="100%">
   </a>
   <h3 align="center">TmuxAI</h3>
@@ -8,15 +8,15 @@
     Your intelligent pair programmer directly within your tmux sessions.
     <br/>
     <br/>
-    <a href="https://github.com/alvinunreal/tmuxai/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/alvinunreal/tmuxai?style=flat-square"></a>
-    <a href="https://github.com/alvinunreal/tmuxai/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/alvinunreal/tmuxai?style=flat-square"></a>
-    <a href="https://github.com/alvinunreal/tmuxai/issues"><img alt="Issues" src="https://img.shields.io/github/issues/alvinunreal/tmuxai?style=flat-square"></a>
+    <a href="https://github.com/sigrunnr/tmuxai/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/sigrunnr/tmuxai?style=flat-square"></a>
+    <a href="https://github.com/sigrunnr/tmuxai/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/sigrunnr/tmuxai?style=flat-square"></a>
+    <a href="https://github.com/sigrunnr/tmuxai/issues"><img alt="Issues" src="https://img.shields.io/github/issues/sigrunnr/tmuxai?style=flat-square"></a>
     <br/>
     <br/>
     <br/>
     <a href="https://tmuxai.dev/screenshots" target="_blank">Screenshots</a> |
-    <a href="https://github.com/alvinunreal/tmuxai/issues/new?labels=bug&template=bug_report.md" target="_blank">Report Bug</a> |
-    <a href="https://github.com/alvinunreal/tmuxai/issues/new?labels=enhancement&template=feature_request.md" target="_blank">Request Feature</a>
+    <a href="https://github.com/sigrunnr/tmuxai/issues/new?labels=bug&template=bug_report.md" target="_blank">Report Bug</a> |
+    <a href="https://github.com/sigrunnr/tmuxai/issues/new?labels=enhancement&template=feature_request.md" target="_blank">Request Feature</a>
   </p>
 </div>
 
@@ -86,13 +86,13 @@ If you use Homebrew, you can install TmuxAI with:
 
 ```bash
 brew install tmux
-brew tap alvinunreal/tmuxai
+brew tap sigrunnr/tmuxai
 brew install tmuxai
 ```
 
 ### Manual Download
 
-You can also download pre-built binaries from the [GitHub releases page](https://github.com/alvinunreal/tmuxai/releases).
+You can also download pre-built binaries from the [GitHub releases page](https://github.com/sigrunnr/tmuxai/releases).
 
 After downloading, make the binary executable and move it to a directory in your PATH:
 
@@ -312,7 +312,7 @@ You can start `tmuxai` with an initial message or task file from the command lin
 The configuration can be managed through a YAML file, environment variables, or via runtime commands.
 
 TmuxAI looks for its configuration file at `~/.config/tmuxai/config.yaml`.
-For a sample configuration file, see [config.example.yaml](https://github.com/alvinunreal/tmuxai/blob/main/config.example.yaml).
+For a sample configuration file, see [config.example.yaml](https://github.com/sigrunnr/tmuxai/blob/main/config.example.yaml).
 
 ### Environment Variables
 
@@ -383,4 +383,4 @@ Don't forget to give the project a star!
 
 ## License
 
-Distributed under the Apache License. See [Apache License](https://github.com/alvinunreal/tmuxai/blob/main/LICENSE) for more information.
+Distributed under the Apache License. See [Apache License](https://github.com/sigrunnr/tmuxai/blob/main/LICENSE) for more information.

@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/alvinunreal/tmuxai/config"
-	"github.com/alvinunreal/tmuxai/internal"
-	"github.com/alvinunreal/tmuxai/logger"
+	"github.com/sigrunnr/tmuxai/config"
+	"github.com/sigrunnr/tmuxai/internal"
+	"github.com/sigrunnr/tmuxai/logger"
 	"github.com/spf13/cobra"
 )
 
