@@ -49,8 +49,7 @@
 
 ## About The Project
 
-![Product Screenshot](https://tmuxai.dev/shots/redis-docker.png)
-_use vim, create docker compose file for nginx and mysql and start both_
+![Product Demo](https://tmuxai.dev/demo.png)
 
 TmuxAI is an intelligent terminal assistant that lives inside your tmux sessions. Unlike other CLI AI tools, TmuxAI observes and understands the content of your tmux panes, providing assistance without requiring you to change your workflow or interrupt your terminal sessions.
 
